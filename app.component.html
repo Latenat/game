@@ -1,0 +1,79 @@
+<button [@exit] *ngIf='perso' class='link exit' (click)='onRestart()'>Exit</button>
+
+<div class='name' *ngIf='!perso' [@coolEnter]>
+  <div>
+    <h3>Create your hero</h3>
+    <form [formGroup]='nameForm' (ngSubmit)='onSubmit()'>
+      <input type='text' formControlName="name" placeholder='Your name here'>
+      <input type='submit' [disabled]='nameForm.invalid' value='Send'>
+    </form>
+    <p style='margin-top: 10px;'>You need 5 fame to win</p>
+  </div>
+</div>
+
+<div class='dead' *ngIf='perso && perso.status === "dead"'>
+  <div>
+    <h1 (click)=onRestart() style='cursor:pointer;'> You are dead</h1>
+  </div>
+</div>
+
+<div class='dead' *ngIf='win'>
+    <div>
+      <h1 (click)=onRestart() style='cursor:pointer;'> You win</h1>
+    </div>
+  </div>
+
+
+<div *ngIf='perso'>
+
+  <div class='perso' [@coolEnter]>
+    <img class='imgHero' src='./assets/hero.png'>
+    <h3>{{perso.name}}</h3>
+    <p>Health : {{perso.currentLife}}/{{perso.maxLife}}</p>
+    <p>Strength : {{perso.strength}}</p>
+    <p>Gold : {{perso.gold}}</p>
+    <p>Fame : {{perso.fame}}</p>
+    <p>Potion : {{perso.potion}}</p>
+    <button class='link' (click)=perso.usePotion()>Use potion</button>
+  </div>
+
+  <div class='message' [@message]>
+    <h3>Messages</h3>
+    <p *ngFor='let message of perso.messages'>{{message}}</p>
+  </div>
+
+  <div class='containDungeonShop'>
+    <div class='dungeon' [@coolEnter]>
+        <img class='img' src='./assets/dungeon.png'>
+      <h3 *ngIf=!dungeon>Dungeon</h3>
+      <h3 *ngIf=dungeon>Dungeon {{dungeon.currentLevel}}/{{dungeon.maxLevel}}</h3>
+      <button class='link' *ngIf=!dungeon (click)=createDungeon()> Enter dungeon</button>
+      <div *ngIf=dungeon>
+        <p> {{dungeon.ennemy.name}} </p>
+        <p>Health : {{dungeon.ennemy.currentLife}}/{{dungeon.ennemy.maxLife}}</p>
+        <p>Strength : {{dungeon.ennemy.strength}}</p>
+        <button class='link' *ngIf="dungeon.ennemy.status === 'alive'" (click)=perso.fight(dungeon.ennemy)> Fight</button>
+        <button class='link' *ngIf="dungeon.ennemy.status === 'dead' && dungeon.status === 'unexplored'" (click)='getDown()'>
+          Get
+          down </button>
+        <button class='link' *ngIf="dungeon.status === 'explored' && dungeon.ennemy.status === 'dead'"
+          (click)='leaveDungeon()'> Leave
+          dungeon </button>
+      </div>
+    </div>
+
+    <div class='shop' *ngIf=!dungeon [@coolEnter]>
+        <img class='img' src='./assets/shop.png'>
+      <h3>Shop</h3>
+      <button class='link' (click)=perso.buyRest()> Rest for the night - 5 G</button>
+      <button class='link' (click)=perso.buyPotion()> Buy potion - 5 G</button>
+      <button class='link' (click)=perso.buyLife()> Buy life - 10 G</button>
+      <button class='link' (click)=perso.buyStrength()> Buy strength - 15 G</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<router-outlet></router-outlet>
